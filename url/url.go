@@ -46,3 +46,15 @@ func insert(ctx context.Context, id, url string) error {
 	`, id, url)
 	return err
 }
+
+// Get retrieves the original URL for the id.
+//
+//encore:api public method=GET path=/url/:id
+func Get(ctx context.Context, id string) (*URL, error) {
+	u := &URL{ID: id}
+	err := sqldb.QueryRow(ctx, `
+		SELECT original_url FROM url
+		WHERE id = $1
+	`, id).Scan(&u.URL)
+	return u, err
+}
