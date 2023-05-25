@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"encore.dev/storage/sqldb"
 )
 
 type URL struct {
@@ -18,9 +19,11 @@ type ShortenParams struct {
 // Shorten shortens a URL.
 //
 //encore:api public method=POST path=/url
-func Shorten(_ context.Context, p *ShortenParams) (*URL, error) {
+func Shorten(ctx context.Context, p *ShortenParams) (*URL, error) {
 	id, err := generateID()
 	if err != nil {
+		return nil, err
+	} else if err := insert(ctx, id, p.URL); err != nil {
 		return nil, err
 	}
 	return &URL{ID: id, URL: p.URL}, nil
@@ -33,4 +36,13 @@ func generateID() (string, error) {
 		return "", err
 	}
 	return base64.RawURLEncoding.EncodeToString(data[:]), nil
+}
+
+// insert inserts a URL into the database.
+func insert(ctx context.Context, id, url string) error {
+	_, err := sqldb.Exec(ctx, `
+		INSERT INTO url (id, original_url)
+		VALUES ($1, $2)
+	`, id, url)
+	return err
 }
