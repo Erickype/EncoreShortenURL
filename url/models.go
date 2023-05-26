@@ -8,3 +8,7 @@ type URL struct {
 type ShortenParams struct {
 	URL string // the URL to shorten
 }
+
+type URLs struct {
+	URLs []*URL
+}

@@ -23,3 +23,10 @@ func Shorten(ctx context.Context, p *ShortenParams) (*URL, error) {
 func Get(ctx context.Context, id string) (*URL, error) {
 	return getById(ctx, id)
 }
+
+// GetAll return all the URL entries in datasource as a []*URL
+//
+//encore:api public method=GET path=/url
+func GetAll(ctx context.Context) (*URLs, error) {
+	return getAll(ctx)
+}

@@ -28,3 +28,22 @@ func getById(ctx context.Context, id string) (*URL, error) {
 
 	return url, nil
 }
+
+// getAll returns all the URL in the datasource
+func getAll(ctx context.Context) (*URLs, error) {
+	query := "select * from public.url"
+	rows, err := sqldb.Query(ctx, query)
+	var urls []*URL
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		row := &URL{}
+		err := rows.Scan(&row.ID, &row.URL)
+		if err != nil {
+			return nil, err
+		}
+		urls = append(urls, row)
+	}
+	return &URLs{URLs: urls}, nil
+}
